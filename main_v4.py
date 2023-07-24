@@ -5,7 +5,29 @@ import math
 from tkinter import ttk
 import csv
 from tkinter import messagebox
-
+from csv import writer
+with open("user_database.csv", 'r') as file:
+    csvreader = csv.reader(file)
+    row=list(csvreader)
+for item in row:
+    if item[3]=="online":
+        user_id=item[0]
+print(user_id)
+with open("order_database.csv", 'r') as file:
+    csvreader = csv.reader(file)
+    row=list(csvreader)
+for item in row:
+    if item[0]==user_id:
+        if item[3]=="unpaid":
+            Order_number=item[1]
+        else:
+            Order_number=int(item[1])+1
+            rows=[user_id,int(Order_number),"0","unpaid"]
+            with open('order_database.csv', 'a',newline='') as f_object:
+                writer_object =csv.writer(f_object)
+                writer_object.writerow(rows)
+                f_object.close()
+print(Order_number)
 #Set up list to store the food item for each category 
 filename="menu_database.csv"
 category_1_dict=[]
@@ -33,9 +55,9 @@ category_func(category_7_dict,"Drinks")
 category_func(category_8_dict,"Pasta")
 #Set up the initial menu item dictionaries list
 Menu_index=category_1_dict
-
-
-
+initial_quantity1=0
+initial_quantity2=0
+initial_quantity3=0
 #set up the category list and category name list to direct the correspond category and its name
 category_list=[category_1_dict,category_2_dict,category_3_dict,category_4_dict,category_5_dict,category_6_dict,category_7_dict,category_8_dict]
 category_name=["Special","Burgers and Sandwiches","Asian Cuisine","Pizza","Fried Foods","Salads and Wraps","Drinks","Pasta"]
@@ -54,6 +76,12 @@ Totalcost=[]
 
 #Create the function for the category button when clicking
 #When clicking the button, it will change the current menu item to the correspond category
+headers = ['User_ID', 'Order_number', 'Name','Quantity','Unit_Price']
+def write_to_csv(csv_file):
+    with open(csv_file, 'r', newline='') as data:
+        csv_reader =csv.DictReader(data)
+        rows = list(csv_reader)
+write_to_csv("menu_database.csv")
 def selected_button(button_name,button_press):
     global Menu_index
     Menu_index=category_list[button_press]
@@ -116,6 +144,16 @@ def add_order(item_name,item_quantity,item_price):
             if cart_list==[]:
                 cart_table.delete(*cart_table.get_children())
                 Total_cost.configure(text="Total cost: $0.00")
+                with open("orderdetail_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                    print(rows)
+                    for item in rows:
+                        if item[0]==user_id and item[1]==Order_number and item[2]==item_name:
+                            rows.remove(item)
+                with open("orderdetail_database.csv", 'w', newline='') as file:
+                    csv_writer = csv.writer(file)
+                    csv_writer.writerows(rows)
             else:
                 Totalprice=[]
                 for item in cart_list:
@@ -131,7 +169,16 @@ def add_order(item_name,item_quantity,item_price):
                 cart_table.delete(*cart_table.get_children())
                 for item in cart_list:
                     cart_table.insert('', 'end',values=(item["Name"],item["Quantity"],item["Price"]))  
-            
+                with open("orderdetail_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                    print(rows)
+                    for item in rows:
+                        if item[0]==user_id and item[1]==Order_number and item[2]==item_name:
+                            rows.remove(item)
+                with open("orderdetail_database.csv", 'w', newline='') as file:
+                    csv_writer = csv.writer(file)
+                    csv_writer.writerows(rows)
         else:
             pass            
     else:
@@ -168,7 +215,18 @@ def add_order(item_name,item_quantity,item_price):
                     Total_cost.configure(text="Total cost: ${}".format(Total_2dp))
                 cart_table.delete(*cart_table.get_children())
                 for item in cart_list:
-                    cart_table.insert('', 'end',values=(item["Name"],item["Quantity"],item["Price"]))  
+                    cart_table.insert('', 'end',values=(item["Name"],item["Quantity"],item["Price"])) 
+                List=[user_id,Order_number,item_name,item_price]
+                with open("orderdetail_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                    print(rows)
+                    for item in rows:
+                        if item[0]==user_id and item[1]==Order_number and item[2]==item_name:
+                            item[3]=item_quantity
+                    with open("orderdetail_database.csv", 'w', newline='') as file:
+                        csv_writer = csv.writer(file)
+                        csv_writer.writerows(rows)
             else:
                 cart_list.append(cart_item)
                 Totalprice=[]
@@ -183,7 +241,14 @@ def add_order(item_name,item_quantity,item_price):
                     Total_2dp="%.2f" %Total
                     Total_cost.configure(text="Total cost: ${}".format(Total_2dp))
                 cart_table.insert('', 'end',values=(item_name,item_quantity,item_price))
-    
+                List=[user_id,Order_number,item_name,item_quantity,item_price]
+                with open("orderdetail_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                    rows.append(List)
+                with open("orderdetail_database.csv", 'w', newline='') as file:
+                    csv_writer = csv.writer(file)
+                    csv_writer.writerows(rows)
         
             
     
@@ -275,6 +340,16 @@ def delete_item():
             try:
                 selected_item = cart_table.selection()[0]
                 current_idx=cart_table.index(selected_item)
+                with open("orderdetail_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                for item in rows:
+                    if item[0]==user_id and item[1]==Order_number and item[2]==cart_list[current_idx]["Name"]:
+                        rows.remove(item)
+                with open("orderdetail_database.csv", 'w', newline='') as file:
+                    csv_writer = csv.writer(file)
+                    csv_writer.writerows(rows)
+                
                 for item in Menu_index:
                     if item["Name"]==cart_list[current_idx]["Name"]:
                         if Menu_index.index(item)==(page_number-1)*3:
@@ -334,6 +409,20 @@ def deleteall_item():
             item1_quantity.configure(textvariable=None)
             item2_quantity.configure(textvariable=None)
             item3_quantity.configure(textvariable=None)
+            with open("orderdetail_database.csv", 'r') as file:
+                csvreader = csv.reader(file)
+                rows=list(csvreader)
+                print(rows)
+                remove_item=[]
+                for item in rows:
+                    if item[0]==user_id and item[1]==Order_number:
+                        remove_item.append(item)
+                for item in remove_item:
+                    rows.remove(item)
+                with open("orderdetail_database.csv", 'w', newline='') as file:
+                    csv_writer = csv.writer(file)
+                    csv_writer.writerows(rows)
+            
         else:
             pass
 def logout():
@@ -472,6 +561,23 @@ cart_table.column("# 3", anchor=CENTER,width=70)
 cart_table.heading("# 3", text="Price")
 cart_table.grid(row=1,column=0,columnspan=3,pady=(25,0))
 Total_cost=Label(right_frame,text="Total cost: $0.00 ",bg="white",font=('Arial 19'),width=15,anchor=W)
+with open("orderdetail_database.csv", 'r') as file:
+    csvreader = csv.reader(file)
+    order=list(csvreader)
+for item in order:
+    if item[0]==user_id and item[1]==Order_number:
+        cart_table.insert('', 'end',values=(item[2],item[3],item[4]))  
+        cart_item={}
+        cart_item["Name"] = item[2]
+        cart_item["Quantity"] = item[3]
+        cart_item["Price"] = item[4]
+        cart_list.append(cart_item)
+        if item[2]==Menu_index[0]["Name"]:
+          initial_quantity1=item[3]
+        elif item[2]==Menu_index[1]["Name"]:
+            initial_quantity2=item[3]
+        elif item[2]==Menu_index[2]["Name"]:
+            initial_quantity3=item[3]
 Total_cost.grid(row=2,column=0,sticky=W,columnspan=3,pady=10)
 delete_button=Button(right_frame,text="Delete",width=9,command=delete_item)
 delete_button.grid(row=3,column=0,sticky=N,pady=9)
@@ -525,13 +631,13 @@ class FoodItem:
             item_quantity.configure(textvariable=integer_var)
             
 #Set the value of each attribute for each food item
-food_item1 = FoodItem(Menu_index[0]['Image_path'], Menu_index[0]['Name'], Menu_index[0]['Price'], Menu_index[0]['Description'],quantity=0,remove_frame=False)
+food_item1 = FoodItem(Menu_index[0]['Image_path'], Menu_index[0]['Name'], Menu_index[0]['Price'], Menu_index[0]['Description'],initial_quantity1,remove_frame=False)
 food_item1.configure(item1_image, item1_name, item1_price, item1_description,item1_order,item1_quantity)
 
-food_item2 = FoodItem(Menu_index[1]['Image_path'], Menu_index[1]['Name'], Menu_index[1]['Price'], Menu_index[1]['Description'],quantity=0,remove_frame=False)
+food_item2 = FoodItem(Menu_index[1]['Image_path'], Menu_index[1]['Name'], Menu_index[1]['Price'], Menu_index[1]['Description'],initial_quantity2,remove_frame=False)
 food_item2.configure(item2_image, item2_name, item2_price, item2_description,item2_order,item2_quantity)
 
-food_item3 = FoodItem(Menu_index[2]['Image_path'], Menu_index[2]['Name'], Menu_index[2]['Price'], Menu_index[2]['Description'],quantity=0,remove_frame=False)
+food_item3 = FoodItem(Menu_index[2]['Image_path'], Menu_index[2]['Name'], Menu_index[2]['Price'], Menu_index[2]['Description'],initial_quantity3,remove_frame=False)
 food_item3.configure(item3_image, item3_name, item3_price, item3_description,item3_order,item3_quantity)
 
 window.mainloop()

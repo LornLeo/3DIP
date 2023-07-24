@@ -4,10 +4,7 @@ from PIL import ImageTk, Image
 from csv import writer
 from tkinter import messagebox
 import csv
-import tkinter as tk
-current_userid=0
 def login():
-    try:
         if Username_ent.get() and Password_ent.get():
             create_account=True
             with open("user_database.csv", 'r',newline='') as file:
@@ -25,7 +22,7 @@ def login():
                                 update_value("user_database.csv", a, "Status", "online")
                                 import main_v4
                 if create_account==True:
-                    result=messagebox.askyesno("Create account", "Invalid username\nYou can use these details to create an account")
+                    result=messagebox.askyesno("Create account", "Invalid username\nHowever, you can use these details to create an account")
                     if result==True:
                         User_ID=0
                         with open("user_database.csv", 'r') as file:
@@ -34,6 +31,11 @@ def login():
                                 User_ID=User_ID+1
                         List=[User_ID,Username_ent.get(),Password_ent.get(),"offline"]
                         with open('user_database.csv', 'a',newline='') as f_object:
+                            writer_object = writer(f_object)
+                            writer_object.writerow(List)
+                            f_object.close()
+                        List=[User_ID,"1","0","unpaid"]
+                        with open('order_database.csv', 'a',newline='') as f_object:
                             writer_object = writer(f_object)
                             writer_object.writerow(List)
                             f_object.close()
@@ -47,14 +49,12 @@ def login():
                 messagebox.showerror("Error", "Please enter the password")
             else:
                 messagebox.showerror("Error", "Please enter the Username")
-    except:
-        pass
+
 
 def update_value(csv_file, row_index, column_name, new_value):
     with open(csv_file, 'r', newline='') as file:
         csv_reader = csv.reader(file)
         rows = list(csv_reader)
-        print(rows)
         column_index = rows[0].index(column_name)
         rows[row_index][column_index] = new_value
 

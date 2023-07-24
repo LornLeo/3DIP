@@ -12,7 +12,6 @@ with open("user_database.csv", 'r') as file:
 for item in row:
     if item[3]=="online":
         user_id=item[0]
-print(user_id)
 with open("order_database.csv", 'r') as file:
     csvreader = csv.reader(file)
     row=list(csvreader)
@@ -27,7 +26,6 @@ for item in row:
                 writer_object =csv.writer(f_object)
                 writer_object.writerow(rows)
                 f_object.close()
-print(Order_number)
 #Set up list to store the food item for each category 
 filename="menu_database.csv"
 category_1_dict=[]
@@ -147,7 +145,6 @@ def add_order(item_name,item_quantity,item_price):
                 with open("orderdetail_database.csv", 'r') as file:
                     csvreader = csv.reader(file)
                     rows=list(csvreader)
-                    print(rows)
                     for item in rows:
                         if item[0]==user_id and item[1]==Order_number and item[2]==item_name:
                             rows.remove(item)
@@ -166,13 +163,20 @@ def add_order(item_name,item_quantity,item_price):
                         Total=Total+item
                     Total_2dp="%.2f" %Total
                     Total_cost.configure(text="Total cost: ${}".format(Total_2dp))
+                with open("order_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                for item in rows:
+                    if item[0]==user_id and item[1]==Order_number:
+                        row_index=rows.index(item)
+                update_value("order_database.csv",row_index,"Total amount",Total_2dp)
+                
                 cart_table.delete(*cart_table.get_children())
                 for item in cart_list:
                     cart_table.insert('', 'end',values=(item["Name"],item["Quantity"],item["Price"]))  
                 with open("orderdetail_database.csv", 'r') as file:
                     csvreader = csv.reader(file)
                     rows=list(csvreader)
-                    print(rows)
                     for item in rows:
                         if item[0]==user_id and item[1]==Order_number and item[2]==item_name:
                             rows.remove(item)
@@ -213,6 +217,13 @@ def add_order(item_name,item_quantity,item_price):
                         Total=Total+item
                     Total_2dp="%.2f" %Total
                     Total_cost.configure(text="Total cost: ${}".format(Total_2dp))
+                with open("order_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                for item in rows:
+                    if item[0]==user_id and item[1]==Order_number:
+                        row_index=rows.index(item)
+                update_value("order_database.csv",row_index,"Total amount",Total_2dp)
                 cart_table.delete(*cart_table.get_children())
                 for item in cart_list:
                     cart_table.insert('', 'end',values=(item["Name"],item["Quantity"],item["Price"])) 
@@ -220,7 +231,6 @@ def add_order(item_name,item_quantity,item_price):
                 with open("orderdetail_database.csv", 'r') as file:
                     csvreader = csv.reader(file)
                     rows=list(csvreader)
-                    print(rows)
                     for item in rows:
                         if item[0]==user_id and item[1]==Order_number and item[2]==item_name:
                             item[3]=item_quantity
@@ -240,6 +250,13 @@ def add_order(item_name,item_quantity,item_price):
                         Total=Total+item
                     Total_2dp="%.2f" %Total
                     Total_cost.configure(text="Total cost: ${}".format(Total_2dp))
+                with open("order_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+                for item in rows:
+                    if item[0]==user_id and item[1]==Order_number:
+                        row_index=rows.index(item)
+                update_value("order_database.csv",row_index,"Total amount",Total_2dp)
                 cart_table.insert('', 'end',values=(item_name,item_quantity,item_price))
                 List=[user_id,Order_number,item_name,item_quantity,item_price]
                 with open("orderdetail_database.csv", 'r') as file:
@@ -366,6 +383,13 @@ def delete_item():
                 Totalprice=[]
                 if cart_list==[]:
                     Total_cost.configure(text="Total cost: $0.00")
+                    with open("order_database.csv", 'r') as file:
+                            csvreader = csv.reader(file)
+                            rows=list(csvreader)
+                    for item in rows:
+                        if item[0]==user_id and item[1]==Order_number:
+                            row_index=rows.index(item)
+                    update_value("order_database.csv",row_index,"Total amount","0.00")
                 else:
                     for item in cart_list:
                         price_1=float(item["Price"].replace('$',""))
@@ -377,6 +401,13 @@ def delete_item():
                             Total=Total+item
                         Total_2dp="%.2f" %Total
                         Total_cost.configure(text="Total cost: ${}".format(Total_2dp))
+                        with open("order_database.csv", 'r') as file:
+                            csvreader = csv.reader(file)
+                            rows=list(csvreader)
+                        for item in rows:
+                            if item[0]==user_id and item[1]==Order_number:
+                                row_index=rows.index(item)
+                        update_value("order_database.csv",row_index,"Total amount",Total_2dp)
             except:
                 pass
         else:
@@ -406,13 +437,19 @@ def deleteall_item():
                 Total=Total+item
             Total_2dp="%.2f" %Total
             Total_cost.configure(text="Total cost: ${}".format(Total_2dp))
+            with open("order_database.csv", 'r') as file:
+                    csvreader = csv.reader(file)
+                    rows=list(csvreader)
+            for item in rows:
+                if item[0]==user_id and item[1]==Order_number:
+                    row_index=rows.index(item)
+            update_value("order_database.csv",row_index,"Total amount",Total_2dp)
             item1_quantity.configure(textvariable=None)
             item2_quantity.configure(textvariable=None)
             item3_quantity.configure(textvariable=None)
             with open("orderdetail_database.csv", 'r') as file:
                 csvreader = csv.reader(file)
                 rows=list(csvreader)
-                print(rows)
                 remove_item=[]
                 for item in rows:
                     if item[0]==user_id and item[1]==Order_number:
@@ -428,7 +465,16 @@ def deleteall_item():
 def logout():
     window.destroy()
     subprocess.run(['python', 'main_v4_login.py'])
-    
+def update_value(csv_file, row_index, column_name, new_value):
+    with open(csv_file, 'r', newline='') as file:
+        csv_reader = csv.reader(file)
+        rows = list(csv_reader)
+        column_index = rows[0].index(column_name)
+        rows[row_index][column_index] = new_value
+
+        with open(csv_file, 'w', newline='') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerows(rows)
 #Set up the window 
 window = Tk()
 window.geometry('1020x550')
@@ -560,7 +606,13 @@ cart_table.heading("# 2", text="Quantity")
 cart_table.column("# 3", anchor=CENTER,width=70)
 cart_table.heading("# 3", text="Price")
 cart_table.grid(row=1,column=0,columnspan=3,pady=(25,0))
-Total_cost=Label(right_frame,text="Total cost: $0.00 ",bg="white",font=('Arial 19'),width=15,anchor=W)
+with open("order_database.csv", 'r') as file:
+    csvreader = csv.reader(file)
+    order=list(csvreader)
+for item in order:
+    if item[0]==user_id and item[1]==Order_number:
+        Total_amount=item[2]
+Total_cost=Label(right_frame,text="Total cost: ${}".format(Total_amount),bg="white",font=('Arial 19'),width=15,anchor=W)
 with open("orderdetail_database.csv", 'r') as file:
     csvreader = csv.reader(file)
     order=list(csvreader)

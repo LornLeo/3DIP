@@ -18,7 +18,6 @@ def login():
                             if row[2]==Password_ent.get():
                                 create_account=None
                                 window.destroy()
-                                print(a)
                                 update_value("user_database.csv", a, "Status", "online")
                                 import main_v4
                 if create_account==True:
@@ -98,14 +97,11 @@ try:
         csvreader = csv.reader(file)
         b=0
         for row in csvreader:
-            print(row)
             b=b+1
-            print(b)
             if b==1:
                 pass
             else:
                 update_value("user_database.csv", (b-1), "Status", "offline")
-                print(row)
 except:
     pass
 #update_value("user_database.csv", 1, "Status", "1")

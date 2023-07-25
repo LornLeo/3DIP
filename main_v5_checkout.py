@@ -3,7 +3,7 @@ from PIL import ImageTk, Image
 from csv import writer
 from tkinter import messagebox
 import csv
-
+import subprocess
 with open("user_database.csv", 'r') as file:
     csvreader = csv.reader(file)
     row=list(csvreader)
@@ -44,6 +44,14 @@ def pay(Firstname,Lastname,Phonenumber,Address):
                 with open("order_database.csv", 'w', newline='') as file:
                     csv_writer = csv.writer(file)
                     csv_writer.writerows(rows)
+                rows=[user_id,int(orderNumber)+1,"0","unpaid"]
+                with open('order_database.csv', 'a',newline='') as f_object:
+                    writer_object =csv.writer(f_object)
+                    writer_object.writerow(rows)
+                    f_object.close()
+                messagebox.showinfo("showinfo","Successfully paid")
+                window.destroy()
+                subprocess.run(['python','main_v5.py'])
             else:
                 pass
         else:
@@ -59,13 +67,21 @@ def pay(Firstname,Lastname,Phonenumber,Address):
                 for item in rows:
                     if item[0]==user_id and item[1]==orderNumber:
                         item[3]="Paid"
-                        item[4]=Firstname
-                        item[5]=Lastname
-                        item[6]=Phonenumber
-                        item[7]=Address
+                        item.append(Firstname)
+                        item.append(Lastname)
+                        item.append(str(Phonenumber))
+                        item.append("Pick up")
                 with open("order_database.csv", 'w', newline='') as file:
                     csv_writer = csv.writer(file)
                     csv_writer.writerows(rows)
+                rows=[user_id,int(orderNumber)+1,"0","unpaid"]
+                with open('order_database.csv', 'a',newline='') as f_object:
+                    writer_object =csv.writer(f_object)
+                    writer_object.writerow(rows)
+                    f_object.close()
+                messagebox.showinfo("showinfo","Successfully paid")
+                window.destroy()
+                subprocess.run(['python','main_v5.py'])
         else:
             messagebox.showerror("Error","All the information should be entered")
 window = Tk()

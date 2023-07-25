@@ -21,11 +21,11 @@ for item in row:
             Order_number=item[1]
         else:
             Order_number=int(item[1])+1
-            rows=[user_id,int(Order_number),"0","unpaid"]
+            '''rows=[user_id,int(Order_number),"0","unpaid"]
             with open('order_database.csv', 'a',newline='') as f_object:
                 writer_object =csv.writer(f_object)
                 writer_object.writerow(rows)
-                f_object.close()
+                f_object.close()'''
 #Set up list to store the food item for each category 
 filename="menu_database.csv"
 category_1_dict=[]
@@ -476,8 +476,48 @@ def update_value(csv_file, row_index, column_name, new_value):
             csv_writer = csv.writer(file)
             csv_writer.writerows(rows)
 def pay():
-    window.destroy()
-    subprocess.run(['python','main_v5_checkout.py'])
+    result=messagebox.askyesno("Pay","Are you sure?")
+    if result==True:
+        window.destroy()
+        subprocess.run(['python','main_v5_checkout.py'])
+    else:
+        pass
+def open_orderhistory():
+    order_history= Toplevel(window)
+    order_history.geometry("370x470")
+    order_history.title("New Window")
+    order_history.resizable(0, 0)
+    order_history.configure(bg="white")
+    title = Label(order_history,text="Order history",font=('Rockwell 21'),bg='#fcc302',fg="white",width=18,padx=30,pady=2)
+    title.grid(row=0,column=1)
+    cart_table=ttk.Treeview(order_history, column=("Order number","Name", "Quantity","Price"), show='headings', height=17)
+    style=ttk.Style()
+    style.theme_use('clam')
+    cart_table.column("# 1",anchor=CENTER,width=120)
+    cart_table.heading("# 1", text="Order Number")
+    cart_table.column("# 2",anchor=CENTER,width=120)
+    cart_table.heading("# 2", text="Name")
+    cart_table.column("# 3", anchor=CENTER,width=57)
+    cart_table.heading("# 3", text="Quantity")
+    cart_table.column("# 4", anchor=CENTER,width=70)
+    cart_table.heading("# 4", text="Price")
+    cart_table.grid(row=1,column=1,columnspan=3,pady=(25,0),sticky=E+W+N+S)
+    with open("order_database.csv", 'r') as file:
+        csvreader = csv.reader(file)
+        rows=list(csvreader)
+    with open("orderdetail_database.csv", 'r') as file:
+        csvreader1 = csv.reader(file)
+        rows1=list(csvreader1)
+    History_list=[]
+    for item in rows:
+        if item[0]==user_id and item[3]=="Paid":
+            History_list.append(item[1])
+    print(History_list)
+    item_list=[]
+    for item in History_list:
+        for item1 in rows1:
+            if item1[1]==item and item[0]==user_id:
+                cart_table.insert('', 'end',values=(item1[1],item1[2],item1[3],item1[4]))  
 #Set up the window 
 window = Tk()
 window.geometry('1020x550')
@@ -499,25 +539,27 @@ right_frame.grid(row=0, column=2,rowspan=3,sticky=N)
 
 #Set up all the category buttons and menu title
 menu_title = Label(left_frame,text="Our Menu",font=('Rockwell 21'),bg='#fcc302',fg="white",width=9,padx=30,pady=2)
-menu_title.grid(row=0,column=0)
+menu_title.grid(row=0,column=0,columnspan=2)
 category_1=Button(left_frame,text=category_name[0],font=('serif 13'),bg="yellow",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,state="disabled",command=lambda:selected_button(category_1,0))
-category_1.grid(row=1,column=0,pady=(25,0),sticky=W)
+category_1.grid(row=1,column=0,columnspan=2,pady=(25,0),sticky=W)
 category_2=Button(left_frame,text=category_name[1],font=('serif 13'),bg="white",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,command=lambda:selected_button(category_2,1))
-category_2.grid(row=2,column=0,pady=(12,0),sticky=W)
+category_2.grid(row=2,column=0,columnspan=2,pady=(12,0),sticky=W)
 category_3=Button(left_frame,text=category_name[2],font=('serif 13'),bg="white",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,command=lambda:selected_button(category_3,2))
-category_3.grid(row=3,column=0,pady=(12,0),sticky=W)
+category_3.grid(row=3,column=0,columnspan=2,pady=(12,0),sticky=W)
 category_4=Button(left_frame,text=category_name[3],font=('serif 13'),bg="white",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,command=lambda:selected_button(category_4,3))
-category_4.grid(row=4,column=0,pady=(12,0),sticky=W)
+category_4.grid(row=4,column=0,columnspan=2,pady=(12,0),sticky=W)
 category_5=Button(left_frame,text=category_name[4],font=('serif 13'),bg="white",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,command=lambda:selected_button(category_5,4))
-category_5.grid(row=5,column=0,pady=(12,0),sticky=W)
+category_5.grid(row=5,column=0,columnspan=2,pady=(12,0),sticky=W)
 category_6=Button(left_frame,text=category_name[5],font=('serif 13'),bg="white",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,command=lambda:selected_button(category_6,5))
-category_6.grid(row=6,column=0,pady=(12,0),sticky=W)
+category_6.grid(row=6,column=0,columnspan=2,pady=(12,0),sticky=W)
 category_7=Button(left_frame,text=category_name[6],font=('serif 13'),bg="white",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,command=lambda:selected_button(category_7,6))
-category_7.grid(row=7,column=0,pady=(12,0),sticky=W)
+category_7.grid(row=7,column=0,columnspan=2,pady=(12,0),sticky=W)
 category_8=Button(left_frame,text=category_name[7],font=('serif 13'),bg="white",width=22,activebackground="#FBFF3C",activeforeground="black",padx=5,pady=5,command=lambda:selected_button(category_8,7))
-category_8.grid(row=8,column=0,pady=(12,0),sticky=W)
+category_8.grid(row=8,column=0,columnspan=2,pady=(12,0),sticky=W)
 Logout_button=Button(left_frame,text="Log out",width=9,command=logout)
-Logout_button.grid(row=9,column=0,sticky=NW,pady=22)
+Logout_button.grid(row=9,column=0,sticky=N,pady=22,padx=20)
+Orderhistory_button=Button(left_frame,text="Order history",width=10,command=open_orderhistory)
+Orderhistory_button.grid(row=9,column=1,sticky=N,pady=22,padx=(20,0))
 
 #Set up GUI for each food items' image, name, price and description.
 food_item1=Frame(middle_frame,bg='white')           
@@ -612,6 +654,8 @@ cart_table.grid(row=1,column=0,columnspan=3,pady=(25,0))
 with open("order_database.csv", 'r') as file:
     csvreader = csv.reader(file)
     order=list(csvreader)
+print(user_id)
+print(Order_number)
 for item in order:
     if item[0]==user_id and item[1]==Order_number and item[3]=="unpaid":
         Total_amount=item[2]
@@ -640,6 +684,7 @@ deleteall_button=Button(right_frame,text="Delete All",width=9,command=deleteall_
 deleteall_button.grid(row=3,column=1,sticky=N,pady=9)
 pay_button=Button(right_frame,text="Pay",width=9,command=pay)
 pay_button.grid(row=3,column=2,sticky=N,pady=9)
+
 
 
 

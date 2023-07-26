@@ -1,30 +1,31 @@
-# main.py
 from tkinter import *
 from PIL import ImageTk, Image
 from csv import writer
 from tkinter import messagebox
 import csv
 import subprocess
+
 def login():
+    # Function to handle the login process.
     if Username_ent.get() and Password_ent.get():
-        with open("user_database.csv", 'r',newline='') as file:
+        with open("user_database.csv", 'r', newline='') as file:
             csvreader = csv.reader(file)
-            rows=list(csvreader)
-            a=-1
-            error=True
+            rows = list(csvreader)
+            a = -1
+            error = True
             for row in rows:
-                a=a+1
-                if row!=[]:
-                    if row[1]==Username_ent.get():
-                        error=False
-                        if row[2]==Password_ent.get():
+                a = a + 1
+                if row != []:
+                    if row[1] == Username_ent.get():
+                        error = False
+                        if row[2] == Password_ent.get():
                             window.destroy()
                             update_value("user_database.csv", a, "Status", "online")
                             subprocess.run(['python', 'main_v5.py'])
                         else:
                             messagebox.showerror("showerror", "Wrong password")
                             break        
-            if error==True:
+            if error == True:
                 messagebox.showerror("showerror", "Invalid username")          
     else:
         if Username_ent.get():
@@ -33,11 +34,11 @@ def login():
             messagebox.showerror("Error", "Please enter the Username")
             
 def sign_up():
+    # Function to handle the sign-up process by opening the signup window.
     subprocess.run(['python', 'main_v5_signup.py'])
 
-
-    
 def update_value(csv_file, row_index, column_name, new_value):
+    # Function to update the value of a specific cell in the CSV file.
     with open(csv_file, 'r', newline='') as file:
         csv_reader = csv.reader(file)
         rows = list(csv_reader)
@@ -75,8 +76,6 @@ Password_lbl=Label(Entry_frame,text="Password: ",bg="white",font=('Arial 17'))
 Password_lbl.grid(row=2,column=0,sticky=W,pady=(23,0))
 Password_ent= Entry(Entry_frame,show="*",bd=3,width=25,font=('Arial 19'))
 Password_ent.grid(row=2, column=1,columnspan=2,sticky=W,pady=(23,0))
-'''Create_button = Button(Entry_frame, text="Create account", command=login,width=20,font=('serif 9'),anchor=E,activebackground="white",activeforeground="red",fg="black",bg="white",bd=0, highlightthickness=0)
-Create_button.grid(row=3,column=1,sticky=NE)'''
 signup_button = Button(Entry_frame, text="Sign up", command=sign_up,width=18,font=('serif 13'),fg="white",bg="black")
 signup_button.grid(row=4,column=1,pady=5)
 Login_button = Button(Entry_frame, text="Login", command=login,width=18,font=('serif 13'),fg="white",bg="black")

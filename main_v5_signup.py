@@ -2,47 +2,49 @@ from tkinter import *
 from csv import writer
 import csv
 from tkinter import messagebox
-import subprocess
-def submit(Username,Password,confirm_password):
+
+def submit(Username, Password, confirm_password):
+    # Function to handle the sign-up form submission.
     if Username and Password and confirm_password:
-        if len(Password)<8:
-            messagebox.showerror("Error", "Password at least 8 digits")
-        elif Password!=confirm_password:
-            messagebox.showerror("Error","Please match the password")
+        if len(Password) < 8:
+            messagebox.showerror("Error", "Password should be at least 8 characters long")
+        elif Password != confirm_password:
+            messagebox.showerror("Error", "Passwords do not match. Please re-enter.")
         else:
-            User_ID=0
+            User_ID = 0
             with open("user_database.csv", 'r') as file:
                 csvreader = csv.reader(file)
-                rows=list(csvreader)
-            error=False
+                rows = list(csvreader)
+            error = False
             for row in rows:
-                User_ID=User_ID+1
-                if row[1]==Username:
-                    messagebox.showerror("Error","Username has already been registered")
-                    error=True
-            if error==False:
-                List=[User_ID,Username,Password,"offline"]
-                with open('user_database.csv', 'a',newline='') as f_object:
+                User_ID = User_ID + 1
+                if row[1] == Username:
+                    messagebox.showerror("Error", "Username has already been registered")
+                    error = True
+            if not error:
+                # Save the new user details to the user_database.csv and order_database.csv.
+                List = [User_ID, Username, Password, "offline"]
+                with open('user_database.csv', 'a', newline='') as f_object:
                     writer_object = writer(f_object)
                     writer_object.writerow(List)
                     f_object.close()
-                List=[User_ID,"1","0","unpaid"]
-                with open('order_database.csv', 'a',newline='') as f_object:
+                List = [User_ID, "1", "0", "unpaid"]
+                with open('order_database.csv', 'a', newline='') as f_object:
                     writer_object = writer(f_object)
                     writer_object.writerow(List)
                     f_object.close()
-                messagebox.showinfo("showinfo", "Successful")
+                messagebox.showinfo("Success", "Account created successfully!")
                 newWindow.destroy()
     else:
         if Username and Password:
-            messagebox.showerror("Error","Please enter the confirmed password")
+            messagebox.showerror("Error", "Please enter the confirmed password")
         elif Username and confirm_password:
-            messagebox.showerror("Error","Please first enter the password")
+            messagebox.showerror("Error", "Please first enter the password")
         elif Username:
-            messagebox.showerror("Error","Please enter the password")
+            messagebox.showerror("Error", "Please enter the password")
         else:
-            messagebox.showerror("Error","Please enter the username")
-
+            messagebox.showerror("Error", "Please enter the username")
+#GUI setting
 newWindow = Tk()
 newWindow.title("Create account")
 newWindow.geometry("500x250")
